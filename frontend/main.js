@@ -1,11 +1,53 @@
+/*FUNCIONES CON POST,DELETE Y PUT*/
+async function crearProductoBD(producto_nuevo) {
+    try {
+        const response = await fetch(`${base_url}/productos/nuevo`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(producto_nuevo)
+        });
+    } catch (error){
+        const mensaje_error = error;
+        alert(mensaje_error)
+    }
+}
+async function borrarProductoBD(producto_id) {
+    try {
+        const response = await fetch(`${base_url}/productos/borrar`, {
+            method: "DELETE",
+            body: JSON.stringify(producto_id)
+        });
+    } catch (error){
+        const mensaje_error = error;
+        alert(mensaje_error)
+    }
+}
+async function actualizarProductoBD(producto_id, producto_actualizar) {
+    try {
+        const response = await fetch(`${base_url}/productos/actualizar`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                producto_id: producto_id, 
+                producto_editado: producto_actualizar})});
+        } catch (error){
+        const mensaje_error = error;
+        alert(mensaje_error)
+    }
+}
+
 /*FUNCIONES*/
 async function buscarProductoByNombre(query) {
     try {
         const response = await fetch(`${base_url}/productos?nombre=${query}`);
         const data = await response.json();
         return data
-    } catch {
-        const mensaje_error = "Algo salió mal";
+    } catch (error){
+        const mensaje_error = error;
         alert(mensaje_error)
     }
 }
@@ -133,3 +175,27 @@ boton_buscador.addEventListener("click", async () => {
 });
 
 obtenerYmostrarFavoritos()
+
+
+/* PRUEBAS */
+const producto_nuevo = {
+    "id":11,
+    "nombre":"Ukelele",
+    "tipo_de_producto":"Instrumento",
+    "marca": "Cocoon",
+    "precio": 120000,
+    "imagen": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiF3bLNZGxee7CsAXIaqNYVKYH4z0bXzXvPEb-3MzqwhHOErKfTqSyRFdm&s=10"
+};
+crearProductoBD(producto_nuevo)
+
+const producto_nuevo_update = { /* ProductoSchemaUpdate */
+    "nombre":"Ukelele",
+    "tipo_de_producto":"Instrumento",
+    "marca": "Cocoon",
+    "precio": 200000, /*CAMBIO DE PRECIO */
+    "imagen": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTiF3bLNZGxee7CsAXIaqNYVKYH4z0bXzXvPEb-3MzqwhHOErKfTqSyRFdm&s=10"
+}
+
+actualizarProductoBD(producto_nuevo.id, producto_nuevo_update)
+
+borrarProductoBD(producto_nuevo.id)
