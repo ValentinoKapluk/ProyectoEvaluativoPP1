@@ -49,13 +49,22 @@ async def productos_by_nombre(nombre: Annotated[str, Query(min_length=1, max_len
     return mostrar_productos
 
 #Agregar un nuevo producto a productos
-@router.post("/productos", response_model=ProductoSchema)
+@router.post("/productos/nuevo", response_model=ProductoSchema)
 async def nuevo_producto(producto:ProductoSchema) -> ProductoSchema:
-    productos.append(dict(producto))
-    return producto
+    existe = False
+    for productoBD in productos:
+        if productoBD["id"] == producto.id:
+            existe = True
+            raise HTTPException(status_code=400, detail="El producto a agregar ya existe")
+            break
+        else:
+            existe = False
+    if existe == False:
+        productos.append(dict(producto))
+        return producto
 
 #Actualizar un producto
-@router.put("/productos",  response_model=ProductoSchema)
+@router.put("/productos/actualizar",  response_model=ProductoSchema)
 async def actualizar_producto(
     producto_id: Annotated[int, Body(gt=0)], 
     producto_editado: ProductoUpdateSchema) -> ProductoSchema:
@@ -70,7 +79,7 @@ async def actualizar_producto(
     raise HTTPException(status_code=404, detail="No se encontro el producto buscado")
 
 #Borrar producto de productos
-@router.delete("/productos", response_model= ProductoSchema)
+@router.delete("/productos/borrar", response_model= ProductoSchema)
 async def borrar_producto(producto_id: Annotated[int, Body(gt=0)]) -> ProductoSchema:
     for producto in productos:
         if producto["id"] == producto_id:
